@@ -1,0 +1,4 @@
+# Perl
+
+ALL the perl scripts require the perl interpreter installed on windows and need the ls.bat and rm.bat files to be in same folder as the one in which script is 
+where the script is to be run.
