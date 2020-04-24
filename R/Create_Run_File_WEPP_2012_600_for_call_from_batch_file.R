@@ -2,7 +2,7 @@
 ##
 ## Script name: Create_Run_File_WEPP_2012_600.R
 ##
-## Purpose of the script: Creates Run file for the WEPP 2012.600 exe
+## Purpose of the script: Creates Run file for the WEPP 2012.600_for_calling_from_batch_File.exe
 ##
 ## Author: Chinmay Deval
 ##
