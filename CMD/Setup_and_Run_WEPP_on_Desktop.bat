@@ -7,14 +7,14 @@ ECHO Start Measure %Time% >> timer.txt
 echo Everything I create will be nested under: "%~dp0" 
 pause
 REM ########## Provide correct path to each variable on between line 10 and 17 ###############
-SET "weppexe=D:\OneDrive - University of Idaho\WEPP_WQ_LilyWang_modified_by_Anurag_04_02_2020\WEPP_WQ_LilyWang_updated_04_20_2020.exe" 
+SET "weppexe=C:\WEPPDesktopRunAutomationScripts\WEPP_WQ_LilyWang_updated_04_20_2020.exe" 
 SET "Rpath=C:\Program Files\R\R-3.4.3\bin\R"
 SET "WEPPcloudZip=D:\Chinmay\storagetemp\seventy-two-bottomland.zip"
-SET "RunFileCreator=C:\Users\Chinmay\Desktop\WEPPcloud_test_run_Blackwood\R_Run_file_Creator\Create_Run_File_WEPP_2012_600_for_call_from_batch_file.R"
-SET "CreateRunFileHere=D:\Chinmay\storagetemp\WEPPDesktopRun\"
+SET "RunFileCreator=C:\WEPPDesktopRunAutomationScripts\Create_Run_File_WEPP_2012_600_for_call_from_batch_file.R"
+SET "CreateRunFileHere=%~dp0\WEPPDesktopRun\"
 SET "NumberOfHillslopes=683"
 SET "NumberofSimulationYears=25"
-SET "PerlScriptToCreateTotalWatSed=D:\GitHub\WEPP-Recipies\Perl\WEPP_daily_corrected_CD.pl"
+SET "PerlScriptToCreateTotalWatSed=C:\WEPPDesktopRunAutomationScripts\WEPP_daily_corrected_CD.pl"
 REM #########################################################################################
 for %%F in ("%weppexe%") do (SET weppexefilename=%%~nxF)
 for %%F in ("%PerlScriptToCreateTotalWatSed%") do (SET PerlScriptfilename=%%~nxF)
