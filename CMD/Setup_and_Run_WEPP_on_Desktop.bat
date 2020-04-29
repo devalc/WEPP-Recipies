@@ -1,5 +1,7 @@
 REM # Created on: 04/23/2020
 REM # Purpose: Script to automate desktop run of WEPP using the WEPPcloud project
+REM # NOTES: Use this if you want to setup desktop run to execute both channels and hillslope together.
+REM # NOTES:  
 REM @author: Chinmay Deval 
 @cls
 @ECHO OFF
