@@ -14,13 +14,18 @@ import os, shlex
 import pandas as pd
 import numpy as np
 #--------------------------------------------------------------------------------------------------
+#Watershed Directory containing all the scenario subdirs
+dir = "D:\\OneDrive - University of Idaho\\lt_runs_soils\\W19\\"
 
-path = "C:\\Users\\Chinmay\\Desktop\\test_sol\\Soil_Conversion\\insoils\\"
-file_db = "insoils\\"
-out_filename = "merged_sols_output.xlsx"
+#--------------------------------------------------------------------------------------------------
+def subdir_path(dir):                                                                                                  
+    r = []                                                                                                            
+    subdirs = [x[0] for x in os.walk(dir)]
+    return subdirs
 
 #--------------------------------------------------------------------------------------------------
  
+
 def list_files(directory, extension):
     saved = os.getcwd()
     os.chdir(directory)
@@ -33,7 +38,7 @@ def get_mukey(a):
      with open(a,'r') as f:
         i = 0
         file = [l for l in f.readlines()] 
-        mukey = int(file[7].strip().rsplit(':', 1)[-1])
+        mukey = int(file[6].strip().rsplit(':', 1)[-1])
         return(mukey)
 
 #-------------------------------------------------------------------------------------------------- 
@@ -200,60 +205,38 @@ def readSoil(fin):
 
 #--------------------------------------------------------------------------------------------------
 
-
-soils_list = list_files(path, "sol")
-print(soils_list)
-
-fin = os.path.join(path, soils_list[1])
-
-#--------------------------------------------------------------------------------------------------
-
-df_horizons = []
-df_soilprop = []
-df_bedrockprop = []
-for i in range(len(soils_list)):
-    d=os.path.join(path, soils_list[i])
-    desc,x,y,z = readSoil(d)
-    mukey = get_mukey(d)
-    y = [dict(item, **{'FileName': d.rsplit('\\', 1)[-1], 'mukey': mukey}) for item in y]
-    df1= pd.DataFrame(y,columns=['depth','bd','ksat', 'anis', 'fc', 'wp', 'sand', 'clay', 'om', 'cec', 'rocks', 'FileName', 'mukey'])
-    df_horizons.append(df1)
-    x.update({'FileName': d.rsplit('\\', 1)[-1], 'mukey': mukey})
-    df_soilprop.append(pd.DataFrame(x, index=[0]))
-    z.update({'FileName': d.rsplit('\\', 1)[-1], 'mukey': mukey})
-#    print(pd.DataFrame(z, index = [0]))
-    df2 = pd.DataFrame(z, index=[0])
-#    df2 = pd.DataFrame(x, index=[0])
-    df_bedrockprop.append(df2) 
-
-#--------------------------------------------------------------------------------------------------
-horizons_df = pd.concat(df_horizons)
-soilprop_df = pd.concat(df_soilprop)
-bedrockprop_df = pd.concat(df_bedrockprop)
-
-#--------------------------------------------------------------------------------------------------
-
-depth_weighted_avg_horizons_df = horizons_df.groupby(['FileName', 'mukey']).apply(weighted_average, ['bd', 'ksat', 'anis', 'fc', 'wp', 'sand', 'clay', 'om', 'cec','rocks']).reset_index()
-
-depth_weighted_avg_horizons_df= pd.DataFrame(depth_weighted_avg_horizons_df)
-
-merged_df = pd.DataFrame.merge(depth_weighted_avg_horizons_df, soilprop_df, on =['FileName', 'mukey'])
-
-merged_df.to_excel(out_filename,index=False)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+subdirpath = subdir_path(dir)[1:]
+for path in  range(len(subdirpath)):
+    out_filename = subdirpath[path] + "\\" + subdirpath[path].rsplit('\\',2)[1] + "_"+ subdirpath[path].rsplit('\\',2)[2] + "_merged_sols_output.xlsx"
+#    print(out_filename)
+    soils_list = list_files(subdirpath[path], "sol")
+#    print(soils_list)
+    df_horizons = []
+    df_soilprop = []
+    df_bedrockprop = []
+    for i in range(len(soils_list)):
+        d=os.path.join(subdirpath[path], soils_list[i])
+        print(d)
+        desc,x,y,z = readSoil(d)
+        if not "Water" in x.values():
+            mukey = get_mukey(d)
+        else:
+            mukey = 99999999
+        y = [dict(item, **{'FileName': d.rsplit('\\', 1)[-1], 'mukey': mukey}) for item in y]
+        df1= pd.DataFrame(y,columns=['depth','bd','ksat', 'anis', 'fc', 'wp', 'sand', 'clay', 'om', 'cec', 'rocks', 'FileName', 'mukey'])
+        df_horizons.append(df1)
+        x.update({'FileName': d.rsplit('\\', 1)[-1], 'mukey': mukey})
+        df_soilprop.append(pd.DataFrame(x, index=[0]))
+        z.update({'FileName': d.rsplit('\\', 1)[-1], 'mukey': mukey})
+#       print(pd.DataFrame(z, index = [0]))
+        df2 = pd.DataFrame(z, index=[0])
+#       df2 = pd.DataFrame(x, index=[0])
+        df_bedrockprop.append(df2)
+    horizons_df = pd.concat(df_horizons)
+    soilprop_df = pd.concat(df_soilprop)
+    bedrockprop_df = pd.concat(df_bedrockprop)
+    depth_weighted_avg_horizons_df = horizons_df.groupby(['FileName', 'mukey']).apply(weighted_average, ['bd', 'ksat', 'anis', 'fc', 'wp', 'sand', 'clay', 'om', 'cec','rocks']).reset_index()
+    depth_weighted_avg_horizons_df= pd.DataFrame(depth_weighted_avg_horizons_df)
+    merged_df = pd.DataFrame.merge(depth_weighted_avg_horizons_df, soilprop_df, on =['FileName', 'mukey'])
+    merged_df.to_excel(out_filename,index=False)
+        
