@@ -15,7 +15,7 @@ import pandas as pd
 import numpy as np
 #--------------------------------------------------------------------------------------------------
 #Watershed Directory containing all the scenario subdirs
-dir = "D:\\OneDrive - University of Idaho\\lt_runs_soils\\W19\\"
+dir = "D:\OneDrive - University of Idaho\lt_runs_soils_05_26_2020\\W19\\"
 
 #--------------------------------------------------------------------------------------------------
 def subdir_path(dir):                                                                                                  
@@ -236,6 +236,9 @@ for path in  range(len(subdirpath)):
     soilprop_df = pd.concat(df_soilprop)
     bedrockprop_df = pd.concat(df_bedrockprop)
     depth_weighted_avg_horizons_df = horizons_df.groupby(['FileName', 'mukey']).apply(weighted_average, ['bd', 'ksat', 'anis', 'fc', 'wp', 'sand', 'clay', 'om', 'cec','rocks']).reset_index()
+    max_depth_horizons_df = horizons_df.groupby(['FileName', 'mukey'])['depth'].max().reset_index()
+    max_depth_horizons_df= max_depth_horizons_df.rename(columns={"depth": "total_depth"})
+    depth_weighted_avg_horizons_df = pd.merge(depth_weighted_avg_horizons_df, max_depth_horizons_df, on =['FileName', 'mukey'])
     depth_weighted_avg_horizons_df= pd.DataFrame(depth_weighted_avg_horizons_df)
     merged_df = pd.DataFrame.merge(depth_weighted_avg_horizons_df, soilprop_df, on =['FileName', 'mukey'])
     merged_df.to_excel(out_filename,index=False)
