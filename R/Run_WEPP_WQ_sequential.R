@@ -21,13 +21,16 @@
 rm(list = ls())
 cat("\014")
 
+## --------------------------Get time taken to run the script-------------------------------##
+
+ptm <- proc.time()
 
 ## ----------------------------------Load packages---------------------------------------##
 source("C:/WEPPDesktopRunAutomationScripts/Create_Individual_hillslope_Run_File_WEPP_2012_600.R")
-
+source("C:/WEPPDesktopRunAutomationScripts/create_channels_watershed_run_file.R")
 
 ## ----------------------------------Initialization---------------------------------------##
-workDir = "D:/Chinmay/storagetemp/3_hillslopes/R_3HS_wq_automation"
+workDir = "D:\\Chinmay\\storagetemp\\3_hillslopes\\R_3HS_wq_automation"
 ZipFileName = "out-of-the-way-dodge.zip"
 weppexe="C:/WEPPDesktopRunAutomationScripts/WEPP_WQ_LilyWang_updated_04_20_2020.exe"
 waterqality_hillslope_files_dir = "C:/WEPPDesktopRunAutomationScripts/water_quality_hillslope_files"
@@ -48,6 +51,7 @@ file.copy(weppexe,"WEPPDesktopRun_WQ/", overwrite =  TRUE )
 
 file.copy(list.files(waterqality_hillslope_files_dir, full.names = TRUE),"WEPPDesktopRun_WQ", recursive = TRUE)
 create_individual_hillslop_run_files("WEPPDesktopRun_WQ/", Number_of_Hillslopes, SimYears)
+create_channels_watershed_run_file("WEPPDesktopRun_WQ/runs/", Number_of_Hillslopes, SimYears)
 
 ## --------------------------------------------------------------------------------------##
 setwd("WEPPDesktopRun_WQ/")
@@ -76,3 +80,24 @@ file.remove(list.files(getwd(),pattern = ".out",full.names=T))
 file.remove(list.files(getwd(),pattern = "_perc",full.names=T))
 file.remove(list.files(getwd(),pattern = "_chem",full.names=T))
 
+
+## --------------------------Run channels/Entire watershed using individual hillslope pass files------------------------------------##
+
+runfile = paste("runs/p0.run")
+errfile = paste("runs/p0.err")
+cmd = paste0("WEPP_WQ_LilyWang_updated_04_20_2020.exe<", runfile, ">", errfile)
+system("cmd.exe", input = cmd)
+
+## -------------------------sim Done------------------------------------##
+
+print("Simulation completed!")
+
+## -------------------------Create totalwatsed file------------------------------------##
+file.copy("C:/WEPPDesktopRunAutomationScripts/WEPP_daily_corrected_CD.pl", "output/")
+setwd("output/")
+Perlrunfile = paste("WEPP_daily_corrected_CD.pl")
+cmd = paste("perl", Perlrunfile, sep= " ")
+system("cmd.exe", input = cmd)
+
+
+print(proc.time() - ptm)
