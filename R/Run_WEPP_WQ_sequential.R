@@ -2,7 +2,14 @@
 ##
 ## Script name: Run_WEPP_WQ_sequential.R
 ##
-## Purpose of the script: Automate WEPP water quality run
+## Purpose of the script: Automates WEPP water quality run. 
+##                        Takes in the project setup in WEPPcloud (downloaded zip file)
+##                        and sets up a local run using the water quality module. Creates
+##                        totalwatsed, processes N and P vars to be comparable with the outlet
+##                        observed values
+##                        
+##                        
+##                        
 ##
 ## Author: Chinmay Deval
 ##
@@ -21,6 +28,10 @@
 rm(list = ls())
 cat("\014")
 
+
+## ----------------------------------Load packages---------------------------------------##
+library(WEPPRecipes)
+
 ## --------------------------Get time taken to run the script-------------------------------##
 
 ptm <- proc.time()
@@ -31,11 +42,20 @@ source("C:/WEPPDesktopRunAutomationScripts/create_channels_watershed_run_file.R"
 
 ## ----------------------------------Initialization---------------------------------------##
 workDir = "D:\\Chinmay\\storagetemp\\3_hillslopes\\R_3HS_wq_automation"
+WEPPOutputdir<- "D:\\Chinmay\\storagetemp\\3_hillslopes\\R_3HS_wq_automation\\WEPPDesktopRun_WQ\\output"
 ZipFileName = "out-of-the-way-dodge.zip"
-weppexe="C:/WEPPDesktopRunAutomationScripts/WEPP_WQ_LilyWang_updated_04_20_2020.exe"
-waterqality_hillslope_files_dir = "C:/WEPPDesktopRunAutomationScripts/water_quality_hillslope_files"
 Number_of_Hillslopes = 3
 SimYears = 10
+pass_path <- "D:\\Chinmay\\storagetemp\\3_hillslopes\\R_3HS_wq_automation\\WEPPDesktopRun_WQ\\output\\pass_pw0.txt"
+SimStartDate <- "2001-01-01"
+SimEndDate <-"2010-12-31"
+loss_path <- "D:\\Chinmay\\storagetemp\\3_hillslopes\\R_3HS_wq_automation\\WEPPDesktopRun_WQ\\output\\loss_pw0.txt"
+
+## --------------------------------------------------------------------------------------##
+### Static(No need to change on Chinmay-PC)
+weppexe="C:/WEPPDesktopRunAutomationScripts/WEPP_WQ_LilyWang_updated_04_20_2020.exe"
+waterqality_hillslope_files_dir = "C:/WEPPDesktopRunAutomationScripts/water_quality_hillslope_files"
+
 
 ## --------------------------------------------------------------------------------------##
 setwd(workDir)
@@ -98,6 +118,34 @@ setwd("output/")
 Perlrunfile = paste("WEPP_daily_corrected_CD.pl")
 cmd = paste("perl", Perlrunfile, sep= " ")
 system("cmd.exe", input = cmd)
+
+
+## --------------------------Read hillslope areas from pass file ------------------------------------##
+
+## grab hillslope values into a df
+hillslope_area <-  WEPPRecipes::get_hillslope_area(pass_path, Number_of_Hillslopes)
+
+## ----------------------------------------------------------------------------------------------------------##
+#### process individual chemplotfiles to later merged into one as a watershed area weighed N and P loads
+## ----------------------------------------------------------------------------------------------------------##
+
+WEPPRecipes::get_N_P_from_chemicalplot(WEPPOutputdir,hillslope_area, Number_of_Hillslopes, SimStartDate, SimEndDate )
+
+## ----------------------------------------------------------------------------------------------------------##
+### Move all csvs created using get_N_P_from_chemicalplot to a designated folder
+## ----------------------------------------------------------------------------------------------------------##
+filesstrings::move_files(list.files(path = WEPPOutputdir ,pattern ='*.csv',full.names=T),
+                         paste(WEPPOutputdir,"chemplot_csvs_all_hillslopes", sep = "/"),overwrite = TRUE)
+
+
+## ----------------------------------------------------------------------------------------------------------##
+## Merge all hillslopes and calculate values at watershed outlet
+## ----------------------------------------------------------------------------------------------------------##
+
+
+whsed_area <- WEPPRecipes::get_WatershedArea_m2(file = loss_path)/10000
+
+WEPPRecipes::get_N_P_comparable_at_outlet(WEPPOutputdir,whsed_area)
 
 
 print(proc.time() - ptm)
