@@ -3,7 +3,7 @@
 ## Script name: download_files_of_a_kind_from_WEPPcloud_project.R
 ##
 ## Purpose of the script: Downloads files with specific extensions from 
-## weppcloud from multiple watersheds and scenarios. In this case soils file are
+## weppcloud from multiple watersheds and scenarios. In this case soils/cli file are
 ## downloaded. 
 ##
 ## Author: Chinmay Deval
@@ -33,11 +33,7 @@ library(xml2)
 
 ## --------------------------------------------------------------------------------------##
 
-watersheds<- c("0_Near_Burton_Creek", "10_Intervening_Area_Agate_Bay", "10_Snow_Creek",
-           "11_Griff_Creek", "12_Baldy_Creek" ,"12_Intervening_Area_Griff_to_Baldy",
-           "13_East_Stateline_Point", "14_First_Creek", "15_Second_Creek",
-           "16_Intervening_Area_Second_to_Wood", "17_Wood_Creek", "18_Third_Creek",
-           "19_Incline_Creek", "1_Unnamed_Creek_at_Tahoe_City_State_Park",  "20_Mill_Creek",
+watersheds<- c("1_Unnamed_Creek_at_Tahoe_City_State_Park",  "20_Mill_Creek",
            "21_Tunnel_Creek", "22_Unnamed_creek_at_Sand_Harbor", "23_Intervening_Area_Sand_Harbor_1",
            "23_Intervening_Area_Sand_Harbor_2", "23_Intervening_Area_Sand_Harbor_3",
            "23_Intervening_Area_Sand_Harbor_4", "24_Marlette_Creek", 
@@ -60,6 +56,8 @@ watersheds<- c("0_Near_Burton_Creek", "10_Intervening_Area_Agate_Bay", "10_Snow_
            "6_Intervening_Area_Cedar_Flat", "6_Unnamed_Creek_at_Cedar_Flat", "7_Watson_Creek",
            "8_Carnelian_Bay_Creek", "9_Carnelian_Creek", "9_Intervening_Area_Carnelian_Bay_1",
            "9_Intervening_Area_Carnelian_Bay_2")
+
+# "18_Third_Creek", "19_Incline_Creek", 
 
 
 scenarios<- c("CurCond",
@@ -105,7 +103,8 @@ download_files_with_specific_extentions_from_WEPPcloud <- function(proj_URL,
       #download all files (may be lapply instead of for here would be good)
       for ( ifile in soils_list){
         print(paste0(dest_fol,ifile))
-        download.file(paste0(full_url,ifile), destfile=paste0(dest_fol,"/",ifile), mode = "wb")
+        download.file(paste0(full_url,ifile), 
+                      destfile=paste0(dest_fol,"/",ifile), mode = "wb",method = "libcurl")
       }
      
     }
@@ -118,5 +117,5 @@ download_files_with_specific_extentions_from_WEPPcloud <- function(proj_URL,
 download_files_with_specific_extentions_from_WEPPcloud("https://wepp1.nkn.uidaho.edu/weppcloud/runs/lt_202010",
                                                        watersheds,
                                                        scenarios,
-                                                       "D:/OneDrive - University of Idaho/lt_runs_soils_11_09_2020/",
-                                                       ext = ".sol")
+                                                       "D:/OneDrive - University of Idaho/lt_runs_climate_11_09_2020/",
+                                                       ext = ".cli")
