@@ -107,6 +107,7 @@ get_loss_and_chanwb <- function(url, url_second_half, out_dir){
   # print(dwld_path)
   download.file(chanwb_dwld_path, destfile = paste0(out_dir, "/", wshed_name, "/", "interface", "/", "chanwb.out") , mode = "wb")
   download.file(loss_dwld_path, destfile = paste0(out_dir, "/", wshed_name, "/", "interface", "/", "loss_pw0.txt") , mode = "wb")
+  download.file(loss_dwld_path, destfile = paste0(out_dir, "/", wshed_name, "/", "interface", "/", "ebe_pw0.txt") , mode = "wb")
 }
 
 
