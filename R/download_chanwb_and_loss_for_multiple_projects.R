@@ -2,7 +2,7 @@
 ##
 ## Script name: download_chanwb_and_loss_for_multiple_projects.R
 ##
-## Purpose of the script: Downloads the loss_pw0.txt and chanwb.out file for all
+## Purpose of the script: Downloads the loss_pw0.txt, ebe_pw0.txt, topaz.nodb, and chanwb.out file for all
 ##  given weppcloud projects. Customised to joh projs
 ##
 ## Author: Chinmay Deval
@@ -64,6 +64,8 @@ lt_proj_url <- c("https://wepp.cloud/weppcloud/runs/lt_202012_40_Edgewood_Creek_
   
 lt_ext <- "lt-wepp_bd16b69-snow/browse/wepp/output/"
 
+
+
 ## --------------------------------------------------------------------------------------##
 
 # bull_proj_urls <- c("https://wepp.cloud/weppcloud/runs/portland_CedarCreek_CurCond.202009.cl532_gridmet.chn_cs150/",
@@ -103,11 +105,14 @@ get_loss_and_chanwb <- function(url, url_second_half, out_dir){
   
   chanwb_dwld_path <- paste0(url, url_second_half, "chanwb.out")
   loss_dwld_path <- paste0(url, url_second_half, "loss_pw0.txt")
+  ebe_dwld_path <- paste0(url, url_second_half, "ebe_pw0.txt")
+  topaz_dwld_path <- paste0(lt_proj_url[1], stringr::str_split(lt_ext, "/")[[1]][1], "/","browse/", "topaz.nodb")
   
   # print(dwld_path)
   download.file(chanwb_dwld_path, destfile = paste0(out_dir, "/", wshed_name, "/", "interface", "/", "chanwb.out") , mode = "wb")
   download.file(loss_dwld_path, destfile = paste0(out_dir, "/", wshed_name, "/", "interface", "/", "loss_pw0.txt") , mode = "wb")
-  download.file(loss_dwld_path, destfile = paste0(out_dir, "/", wshed_name, "/", "interface", "/", "ebe_pw0.txt") , mode = "wb")
+  download.file(ebe_dwld_path, destfile = paste0(out_dir, "/", wshed_name, "/", "interface", "/", "ebe_pw0.txt") , mode = "wb")
+  download.file(topaz_dwld_path, destfile = paste0(out_dir, "/", wshed_name, "/", "interface", "/", "topaz.nodb") , mode = "wb")
 }
 
 
